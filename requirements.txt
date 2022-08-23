@@ -1,8 +1,6 @@
-pandas<1.4.3
-xlrd<2.0
-openpyxl==3.0.10
-Pillow==9.2.0
-plotly==5.9.0
-streamlit==1.12.0
+pandas
+Pillow
+plotly
+streamlit
 os
 pypyodbc
