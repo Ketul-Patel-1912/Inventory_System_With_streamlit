@@ -4,7 +4,8 @@ import streamlit as st
 import plotly.express as px
 from PIL import Image
 import os
-import pypyodbc as odbc
+# import pypyodbc as odbc
+import sqlite3
 
 # @st.cache
 # def load_image(image_file):
@@ -21,50 +22,50 @@ st.set_page_config(page_title='Die_Inventory_System',
 # from db_fxn import (table_create,insert_values,view_all_data,get_die_number,view_unique_die_number,view_unique_spec_size,view_unique_spec_code,view_unique_total_width,view_unique_compound,edit_die_data,delete_data,search_record)
 
 
-# import sqlite3
-# conn = sqlite3.connect('data.db')
-# mycursor =conn.cursor()
 
-# def create_table():
-#     mycursor.execute("CREATE TABLE IF NOT EXISTS spec_history(die_number varchar(25) not null,compound varchar(25),tread_size varchar(50),spec_code varchar(50),oem varchar(50),total_width int not null,top_width int not null,length int not null,weight int not null,m_weight int not null,issue_date date,machining_date date,prototype_date date,production_date date,revoke_date date,remark varchar(80))")
+mydb = sqlite3.connect('data.db')
+mycursor =mydb.cursor()
+
+def create_table():
+    mycursor.execute("CREATE TABLE IF NOT EXISTS spec_history(die_number varchar(25) not null,compound varchar(25),tread_size varchar(50),spec_code varchar(50),oem varchar(50),total_width int not null,top_width int not null,length int not null,weight int not null,m_weight int not null,issue_date date,machining_date date,prototype_date date,production_date date,revoke_date date,remark varchar(80))")
                                              
 
-DRIVER_NAME = 'SQL SERVER'
-SERVER_NAME = 'LAPTOP-NQPCNVC9'
-DATABASE_NAME ="Tread_Spec_History"
-CONNECTION_STRING =f"""
-                    DRIVER={{{DRIVER_NAME}}};
-                    SERVER={SERVER_NAME};
-                    DATABASE={DATABASE_NAME};
-                    Trust_Connection=yes;
-                    """
+# DRIVER_NAME = 'SQL SERVER'
+# SERVER_NAME = 'LAPTOP-NQPCNVC9'
+# DATABASE_NAME ="Tread_Spec_History"
+# CONNECTION_STRING =f"""
+#                     DRIVER={{{DRIVER_NAME}}};
+#                     SERVER={SERVER_NAME};
+#                     DATABASE={DATABASE_NAME};
+#                     Trust_Connection=yes;
+#                     """
 
-mydb = odbc.connect(CONNECTION_STRING)
-mycursor = mydb.cursor()
-mycursor.execute("USE Tread_Spec_History")
+# mydb = odbc.connect(CONNECTION_STRING)
+# mycursor = mydb.cursor()
+# mycursor.execute("USE Tread_Spec_History")
 
-def table_create():
-        mycursor.execute(""" IF NOT EXISTS (SELECT 1 FROM sys.tables WHERE name = 'spec_history' AND type = 'U')
-                            BEGIN
-                                CREATE TABLE spec_history (
-                                    die_number varchar(25) not null, 
-                                    compound varchar(25) not null,
-                                    tread_size varchar(50) not null,
-                                    spec_code varchar(50) not null,
-                                    oem varchar(50),
-                                    total_width int not null,
-                                    top_width int not null,
-                                    length int not null,
-                                    weight int not null,
-                                    m_weight int not null,
-                                    issue_date varchar(50),
-                                    machining_date varchar(50),
-                                    prototype_date varchar(50),
-                                    production_date varchar(50),
-                                    revoke_date varchar(50),
-                                    remark varchar(500) 
-                                    )
-                            END""")
+# def table_create():
+#         mycursor.execute(""" IF NOT EXISTS (SELECT 1 FROM sys.tables WHERE name = 'spec_history' AND type = 'U')
+#                             BEGIN
+#                                 CREATE TABLE spec_history (
+#                                     die_number varchar(25) not null, 
+#                                     compound varchar(25) not null,
+#                                     tread_size varchar(50) not null,
+#                                     spec_code varchar(50) not null,
+#                                     oem varchar(50),
+#                                     total_width int not null,
+#                                     top_width int not null,
+#                                     length int not null,
+#                                     weight int not null,
+#                                     m_weight int not null,
+#                                     issue_date varchar(50),
+#                                     machining_date varchar(50),
+#                                     prototype_date varchar(50),
+#                                     production_date varchar(50),
+#                                     revoke_date varchar(50),
+#                                     remark varchar(500) 
+#                                     )
+#                             END""")
 
         
 
@@ -150,7 +151,7 @@ def main():
         menu = ["Add Tread Spec History",'Show Records','Update','Delete','About']
         choice = st.sidebar.selectbox('Menu',menu)
         
-        table_create()
+        create_table()
         
         if choice == 'Add Tread Spec History':
                 new_title1 = '<p style="font-family:sans-serif; color:#F63366; font-size: 40px; font-weight: bold;">Add Tread Specification Details</p>'
