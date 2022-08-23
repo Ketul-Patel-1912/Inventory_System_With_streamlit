@@ -185,15 +185,7 @@ def main():
                 remark = st.text_area("Remark")
                 
                 
- ###--- Spec Load and store in directory-----####  
-                           
-                # if image_files is not None:
-                #         file_details = {"FileName":die_number,"FileType":image_files.type}
-
-                #         st.write(file_details) 
-                #         img=Image.open(image_files)
-                #         st.image(img,use_column_width='auto')
-                #         # st.warning("Add Die number First",icon="⚠️")  
+ ###--- Spec Load and store in directory-----#### 
                         
                 validation = [die_number,tread_size,spec_code,oem,total_width,top_width,length,weight,m_weight]
                 clm = ['Die Number','Tread Size','Spec Code','OEM','Total Width','Top Width','Length','Weight','m_weight']
@@ -225,7 +217,16 @@ def main():
                 
                 if submit_button:
                         if image_files is not None:
-                                with open(os.path.join("Spec_Photo","{}.jpg".format(die_number)),"wb")as f:
+                                parent_dir = "C:/"
+                                directory = "Spec_Photo"
+                                path = os.path.join(parent_dir, directory)
+                                try:
+                                        os.makedirs(path, exist_ok = True)
+                                        # print("Directory '%s' created successfully" % directory)
+                                except OSError as error:
+                                        st.text("Directory '%s' can not be created" % directory)
+                                        
+                                with open(os.path.join(path,"{}.jpg".format(die_number)),"wb")as f:
                                         f.write(image_files.getbuffer())
                           
                         insert_values(die_number,compound,tread_size,spec_code,oem,total_width,top_width,length,weight,m_weight,issue_data,machining_data,prototype_data,production_data,revoke_data,remark)
@@ -257,9 +258,9 @@ def main():
                                 df = pd.DataFrame(result,columns=column)
                                 st.dataframe(df)
                                 
-                                path = "C://Users/ketul/OneDrive/Desktop/Die_Inventory_Streamlit/Spec_Photo/{}.JPG".format(search_item)
+                                path = "C://Spec_Photo/{}.JPG".format(search_item)
                                 
-                                if path is not "C://Users/ketul/OneDrive/Desktop/Die_Inventory_Streamlit/Spec_Photo/{}.JPG".format(search_item):
+                                if path is not "C://Spec_Photo/{}.JPG".format(search_item):
                                         img = Image.open(path,"r")
                                         st.image(img,use_column_width='always')
                                 else:
