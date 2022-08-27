@@ -1,12 +1,14 @@
 
 
 import base64
+from email.policy import default
 import pandas as pd
 import streamlit as st
 from streamlit_option_menu import option_menu
 import plotly.express as px
 from PIL import Image
 import os
+import os.path
 import sqlite3
 
 # img1 = Image.open('icon16.png')
@@ -104,13 +106,38 @@ def get_die_number(number):
     data = mycursor.fetchall()
     return data
 
-def edit_die_data(new_die_number,new_compound,new_tread_size,new_spec_code,new_oem,new_total_width,new_top_width,new_length,new_weight,new_m_weight,new_issue_date,new_machining_date,new_prototype_date,new_production_date,new_revoke_date,new_remark,die_number1,compound1,tread_size1,spec_code1,oem1,total_width1,top_width1,length1,weight1,m_weight1,issue_date1,machining_date1,prototype_date1,production_date1,revoke_date1,remark1):
+def delete_image(die_number):
+        
+        mycursor.execute("UPDATE spec_history SET image='' WHERE die_number='{}'".format(die_number))
+        mydb.commit()
+        print("query executed successfully")
+        
+
+def edit_die_data(new_die_number,new_compound,new_tread_size,new_spec_code,new_oem,new_total_width,new_top_width,new_length,new_weight,new_m_weight,new_issue_date,new_machining_date,new_prototype_date,new_production_date,new_revoke_date,new_remark,convert_pic,die_number1,compound1,tread_size1,spec_code1,oem1,total_width1,top_width1,length1,weight1,m_weight1,issue_date1,machining_date1,prototype_date1,production_date1,revoke_date1,remark1,image1):
+        
+        mycursor.execute("""UPDATE spec_history SET die_number="{}",compound={},tread_size='{}',spec_code='{}',oem='{}',total_width={},top_width={},length={},weight={},m_weight={},issue_date='{}',machining_date='{}',prototype_date='{}',production_date='{}',revoke_date='{}',remark='{}',image={} WHERE  die_number={} and compound={} and tread_size='{}' and spec_code='{}' and oem='{}' and total_width={} and top_width={} and length={} and weight={} and m_weight={} and issue_date='{}' and machining_date='{}' and prototype_date='{}' and production_date='{}' and revoke_date='{}' and remark='{}' and image='{}'""".format(new_die_number,new_compound,new_tread_size,new_spec_code,new_oem,new_total_width,new_top_width,new_length,new_weight,new_m_weight,new_issue_date,new_machining_date,new_prototype_date,new_production_date,new_revoke_date,new_remark,convert_pic,die_number1,compound1,tread_size1,spec_code1,oem1,total_width1,top_width1,length1,weight1,m_weight1,issue_date1,machining_date1,prototype_date1,production_date1,revoke_date1,remark1,image1))
+            
+        mydb.commit()
+        fetch = mycursor.fetchall()
+        return fetch
+
+def update_image(new_die_number,image):
+        
+        mycursor.execute("UPDATE spec_history SET image='{}' WHERE die_number='{}'".format(image,new_die_number))
+
+        mydb.commit()
+        fetch = mycursor.fetchall()
+        return fetch
+
+def edit_die_data_radio_no(new_die_number,new_compound,new_tread_size,new_spec_code,new_oem,new_total_width,new_top_width,new_length,new_weight,new_m_weight,new_issue_date,new_machining_date,new_prototype_date,new_production_date,new_revoke_date,new_remark,die_number1,compound1,tread_size1,spec_code1,oem1,total_width1,top_width1,length1,weight1,m_weight1,issue_date1,machining_date1,prototype_date1,production_date1,revoke_date1,remark1):
+        
+        mycursor.execute("""UPDATE spec_history SET die_number='{}',compound='{}',tread_size='{}',spec_code='{}',oem='{}',total_width={},top_width={},length={},weight={},m_weight={},issue_date='{}',machining_date='{}',prototype_date='{}',production_date='{}',revoke_date='{}',remark='{}' \
+                     WHERE  die_number='{}' and compound='{}' and tread_size='{}' and spec_code='{}' and oem='{}' and total_width='{}' and top_width='{}' and length='{}' and weight='{}' and m_weight='{}' and issue_date='{}' and machining_date='{}' and prototype_date='{}' and production_date='{}' and revoke_date='{}' and remark='{}'""".format(new_die_number,new_compound,new_tread_size,new_spec_code,new_oem,new_total_width,new_top_width,new_length,new_weight,new_m_weight,new_issue_date,new_machining_date,new_prototype_date,new_production_date,new_revoke_date,new_remark,die_number1,compound1,tread_size1,spec_code1,oem1,total_width1,top_width1,length1,weight1,m_weight1,issue_date1,machining_date1,prototype_date1,production_date1,revoke_date1,remark1))
     
-    mycursor.execute("UPDATE spec_history SET die_number='{}',compound='{}',tread_size='{}',spec_code='{}',oem='{}',total_width={},top_width={},length={},weight={},m_weight={},issue_date='{}',machining_date='{}',prototype_date='{}',production_date='{}',revoke_date='{}',remark='{}' WHERE  die_number='{}' and compound='{}' and tread_size='{}' and spec_code='{}' and oem='{}' and total_width='{}' and top_width='{}' and length='{}' and weight='{}' and m_weight='{}' and issue_date='{}' and machining_date='{}' and prototype_date='{}' and production_date='{}' and revoke_date='{}' and remark='{}'".format(new_die_number,new_compound,new_tread_size,new_spec_code,new_oem,new_total_width,new_top_width,new_length,new_weight,new_m_weight,new_issue_date,new_machining_date,new_prototype_date,new_production_date,new_revoke_date,new_remark,die_number1,compound1,tread_size1,spec_code1,oem1,total_width1,top_width1,length1,weight1,m_weight1,issue_date1,machining_date1,prototype_date1,production_date1,revoke_date1,remark1))
-    
-    mydb.commit()
-    fetch = mycursor.fetchall()
-    return fetch
+        mydb.commit()
+        fetch = mycursor.fetchall()
+        return fetch
+        
     
 def delete_data(number):
     mycursor.execute("DELETE FROM spec_history WHERE die_number='{}'".format(number))
@@ -224,6 +251,8 @@ def main():
                                 
                         if submit_button:
                                 insert_values(die_number,compound,tread_size,spec_code,oem,total_width,top_width,length,weight,m_weight,issue_data,machining_data,prototype_data,production_data,revoke_data,remark,StoreFilePath)
+                                
+                                st.balloons()
                                 st.success("Tread Specification History Updated successfully :-  {}".format(die_number))
                                         
                         
@@ -260,12 +289,22 @@ def main():
                                                 directory = "Spec_Photo"
                                                 path = os.path.join(parent_dir, directory)
                                                 StoreFilePath = "{}/{}.JPG".format(path,search_item)
-                                                img=Image.open(StoreFilePath)
-                                                st.image(img,use_column_width='always')
-                                        else:
-                                                st.warning("Zero Record in Dataset, ADD Spec DATA",icon="⚠️")
                                                 
-                                        
+                                                if StoreFilePath == 'C:/Spec_Photo/{}.JPG'.format(search_item):
+
+                                                        file_exists = os.path.exists(StoreFilePath)
+                                                        if file_exists:
+                                                                img=Image.open(StoreFilePath)
+                                                                st.image(img,use_column_width='always')
+                                                        else:
+                                                                st.warning("No match spec image in directory",icon="🙄")
+                                                        
+                                                elif search_item is None:
+                                                        st.warning("Zero Record in Dataset, ADD Spec DATA",icon="🙄")
+                                                        
+                                                else:
+                                                        st.warning("Zero Record in Dataset, ADD Spec DATA",icon="🙄")
+                                       
                                         # print(read_image(search_item,StoreFilePath))               
                 
                                 elif filter_selection == "Tread Size":
@@ -330,79 +369,160 @@ def main():
                 elif choice == 'Update Record':
                         # new_title3 = '<p style="font-family:sans-serif; color:#F63366; font-size: 40px; font-weight: bold;">Update Tread Specification Details</p>'
                         # st.markdown(new_title3, unsafe_allow_html=True)
-                        st.write("---")
-                        result = view_all_data()
-                        column = ['die_number','compound','tread_size','spec_code','oem','total_width','top_width','length','weight','m_weight','issue_date','machining_date','prototype_date','production_date','revoke_date','remark','image']
-                        df = pd.DataFrame(result,columns=column)
-                        
-                        with st.expander("Current Records"):
-                                st.dataframe(df)
-                        list_of_die_number = [i[0] for i in view_unique_die_number()]
-                        # st.write(list_of_die_number)
-                        select_die = st.selectbox("SELECT DIE NUMBER FOR RECORD UPDATE",list_of_die_number)
-                        select_result = get_die_number(select_die)
-                        
-                        if select_result:
-                                die_number1 = select_result[0][0]
-                                compound1 =  select_result[0][1]
-                                tread_size1 = select_result[0][2]
-                                spec_code1 = select_result[0][3]
-                                oem1 = select_result[0][4]
-                                total_width1 = select_result[0][5]
-                                top_width1 = select_result[0][6]
-                                length1 = select_result[0][7]
-                                weight1 = select_result[0][8]
-                                m_weight1 = select_result[0][9]
-                                issue_date1 = select_result[0][10]
-                                machining_date1 = select_result[0][11]
-                                prototype_date1 = select_result[0][12]
-                                production_date1 = select_result[0][13]
-                                revoke_date1 = select_result[0][14]
-                                remark1 = select_result[0][15]   
+                             
+                            
+                        with st.expander("Find And Update Records"):
+                                       
+                                list_of_die_number = [i[0] for i in view_unique_die_number()]
                                 
-                                st.write('---')
-                                
-                                #--make layout--#
-                                
-                                col1,col2,col3,col4,col5 = st.columns(5)
+                                select_die = st.selectbox("SELECT DIE NUMBER FOR RECORD UPDATE",list_of_die_number)
+                                select_result = get_die_number(select_die)
+                                st.write("---") 
+                                      
+                                if select_result:
+                                        die_number1 = select_result[0][0]
+                                        compound1 =  select_result[0][1]
+                                        tread_size1 = select_result[0][2]
+                                        spec_code1 = select_result[0][3]
+                                        oem1 = select_result[0][4]
+                                        total_width1 = select_result[0][5]
+                                        top_width1 = select_result[0][6]
+                                        length1 = select_result[0][7]
+                                        weight1 = select_result[0][8]
+                                        m_weight1 = select_result[0][9]
+                                        issue_date1 = select_result[0][10]
+                                        machining_date1 = select_result[0][11]
+                                        prototype_date1 = select_result[0][12]
+                                        production_date1 = select_result[0][13]
+                                        revoke_date1 = select_result[0][14]
+                                        remark1 = select_result[0][15]   
+                                        image1 = select_result[0][16]    ## binary data
+                                        
+                               
+                                        
+                                        #--make layout--#
+                                        
+                                        
+                                col1,col2,col3=st.columns(3)
                                 with col1:
                                         new_die_number = st.text_input("Die_number",die_number1,placeholder="IA001(101-01)-01")
-                                        new_total_width = st.number_input("Total Width",total_width1)
-                                        new_issue_date = st.text_input("Issue Date")
-                                with col2:
                                         cmp=['7316','7716','7717','751','752','7316+7250','751+7250']
                                         new_compound = st.selectbox('Coumpound',cmp)
-                                        new_top_width = st.number_input("Top Width",top_width1)
-                                        new_machining_date = st.text_input("Die Machining Date")
-                                with col3:
                                         new_tread_size  = st.text_input("Tread Size",tread_size1,placeholder='90/100-10 M6000')
-                                        new_length = st.number_input("Length",length1)
-                                        new_prototype_date = st.text_input("Prototype Date")
-                                with col4:
-                                        new_spec_code = st.text_input('Spec.Code',spec_code1,placeholder='SMC21522-027-A/B/C')
-                                        new_weight = st.number_input("Weight",weight1)
-                                        new_production_date = st.text_input("Production Date")
-                                with col5:
+                                        new_spec_code = st.text_input('Spec.Code',spec_code1,placeholder='SMC21522-027-A/B/C')                                                
                                         new_oem = st.text_input('OEM',oem1,placeholder='Honda-TT/TL')
+                                        
+                                with col2:
+                                        new_total_width = st.number_input("Total Width",total_width1)                                                
+                                        new_top_width = st.number_input("Top Width",top_width1)
+                                        new_length = st.number_input("Length",length1)
+                                        new_weight = st.number_input("Weight",weight1)
                                         new_m_weight = st.number_input("1 Meter Weight",m_weight1)
+                                with col3:
+                                        new_issue_date = st.text_input("Issue Date")
+                                        new_machining_date = st.text_input("Die Machining Date")
+                                        new_prototype_date = st.text_input("Prototype Date")
+                                        new_production_date = st.text_input("Production Date")
                                         new_revoke_date = st.text_input("Revoke Date")
-                                        
-                                new_remark = st.text_area("Remark",remark1)
-                                
-                                if st.button("Update Details"):
-                                        
-                                        edit_die_data(new_die_number,new_compound,new_tread_size,new_spec_code,new_oem,new_total_width,new_top_width,new_length,new_weight,new_m_weight,new_issue_date,new_machining_date,new_prototype_date,new_production_date,new_revoke_date,new_remark,die_number1,compound1,tread_size1,spec_code1,oem1,total_width1,top_width1,length1,weight1,m_weight1,issue_date1,machining_date1,prototype_date1,production_date1,revoke_date1,remark1)
-                                        
-                                        st.success("Tread Specification History Updated successfully")
-                                
-                                result = view_all_data()
-                                column = ['die_number','compound','tread_size','spec_code','oem','total_width','top_width','length','weight','m_weight','issue_date','machining_date','prototype_date','production_date','revoke_date','remark','image']
-                                df = pd.DataFrame(result,columns=column)
-                                
-                                with st.expander("Updated Records"):
-                                        st.dataframe(df)
-                                                
                         
+                                new_remark = st.text_area("Remark",remark1)
+                        
+                                if select_die is not None:
+                                        parent_dir = "C:/"
+                                        directory = "Spec_Photo"
+                                        path = os.path.join(parent_dir, directory)
+                                        StoreFilePath = "{}/{}.JPG".format(path,select_die)
+                                        
+                                        f1,f2 = st.columns(2)
+                                        f1.subheader("Currunt Tread Specification Image")
+                                        img=Image.open(StoreFilePath)
+                                        
+                                        f1.image(img,use_column_width=True)
+                                        
+                                else:
+                                        st.warning("Zero Record in Dataset, ADD Spec DATA",icon="🙄")
+                                
+                                if new_die_number and new_total_width and new_top_width and new_tread_size and new_length  and new_spec_code  and new_weight and new_m_weight:
+                                        cnt=2
+                                        radio_button = st.radio("Do you Want to change Tread Spec Image..?",options=["No",'Yes'],horizontal=True,disabled=False)
+                                        # check = st.checkbox("")
+                                
+                                        if radio_button=="Yes":
+                                                
+                                                image_files_updated = st.file_uploader("Choose Tread Specification Image",type=['.jpeg','.jpg','.png'],disabled=False)
+                                                update = st.button("Update Record",disabled=False)
+                                                
+                                                if image_files_updated is not None: 
+                                
+                                                        parent_dir = "C:/"
+                                                        directory = "Spec_Photo"
+                                                        path = os.path.join(parent_dir, directory)
+                                                        os.makedirs(path, exist_ok = True)
+                                                        StoreFilePath2 = "{}/{}.JPG".format(path,new_die_number)
+                                                        f2.subheader("Updated Tread Specification Image")        
+                                                        img2=Image.open(image_files_updated)
+                                                        f2.image(img2,use_column_width=True)
+                                                        
+                                                                
+                                                        
+                                        else:
+                                                
+                                                image_files_updated = st.file_uploader("Choose Tread Specification Image",type=['.jpeg','.jpg','.png'],disabled=True)
+                                                
+                                                update = st.button("Update Record",disabled=False)
+                     
+                                else:
+                                        radio_button = st.radio("Do you Want to change Tread Spec Image..?",options=["Yes","No"],horizontal=True,disabled=True)
+                                        update = st.button("Update Record",disabled=True)
+                                        
+                                        st.info("OPPS..!! You havn't Fill the all required Details", icon="ℹ️")
+                                
+                        # if "load_state" not in st.session_state:
+                        #                 st.session_state.load_state = False
+                                
+                        if update: #or st.session_state.load_state:
+                                        
+                                        # st.session_state.load_state = True    
+                                         
+                                        if radio_button=="No":
+                                                
+                                                parent_dir = "C:/"
+                                                directory = "Spec_Photo"
+                                                path = os.path.join(parent_dir, directory)
+                                                
+                                                old_path = "{}/{}.JPG".format(path,die_number1)
+                                                new_path = "{}/{}.JPG".format(path,new_die_number)
+                                                os.rename(old_path, new_path)
+                                                
+                                                
+                                                edit_die_data_radio_no(new_die_number,new_compound,new_tread_size,new_spec_code,new_oem,new_total_width,new_top_width,new_length,new_weight,new_m_weight,new_issue_date,new_machining_date,new_prototype_date,new_production_date,new_revoke_date,new_remark,die_number1,compound1,tread_size1,spec_code1,oem1,total_width1,top_width1,length1,weight1,m_weight1,issue_date1,machining_date1,prototype_date1,production_date1,revoke_date1,remark1)
+                                
+                                                st.balloons()
+                                                st.success("Tread Specification History Updated successfully")
+                                                
+                                                
+                                        elif radio_button=="Yes":
+                                                
+                                                with open(StoreFilePath2, "wb") as file:
+                                                                file.write(image_files_updated.getbuffer())
+                                                    
+                                                # delete_image(die_number1)
+                                                
+                                                # st.write("delete query executed successfully")
+                                                
+                                                # image1=''
+                                                
+                                                convert_pic = list(convert_To_Binary(StoreFilePath2))
+                                                convert_pic = list(convert_pic)
+                                                
+                                                edit_die_data(new_die_number,new_compound,new_tread_size,new_spec_code,new_oem,new_total_width,new_top_width,new_length,new_weight,new_m_weight,new_issue_date,new_machining_date,new_prototype_date,new_production_date,new_revoke_date,new_remark,convert_pic,die_number1,compound1,tread_size1,spec_code1,oem1,total_width1,top_width1,length1,weight1,m_weight1,issue_date1,machining_date1,prototype_date1,production_date1,revoke_date1,remark1,image1)
+                                                
+                                                st.write("update image query executed successfully")
+                                                
+                                                st.balloons()
+                                                st.success("Tread Specification History Updated successfully")
+          
+                   
                 elif choice == 'Delete Record':
                         # new_title4 = '<p style="font-family:sans-serif; color:#F63366; font-size: 40px; font-weight: bold;">Delete Tread Specification Details</p>'
                         # st.markdown(new_title4, unsafe_allow_html=True)
@@ -422,6 +542,7 @@ def main():
                         # st.warning("Do you want to Delete record")
                         if st.button("Delete the record"):
                                 delete_data(select_die)
+                                st.balloons()
                                 st.success("Data has been successfully Deleted")
                                 
                         result = view_all_data()
