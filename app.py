@@ -300,9 +300,10 @@ def main():
                         # new_title2 = '<p style="font-family:sans-serif; color:#F63366; font-size: 40px; font-weight: bold;">View Tread Specification Details</p>'
                         # st.markdown(new_title2, unsafe_allow_html=True)
                 result = view_all_data()
-                column = ['die_number','compound','tread_size','spec_code','oem','total_width','top_width','length','weight','m_weight','issue_date','machining_date','prototype_date','production_date','revoke_date','remark','status','image']
+                column = ['die_number','compound','tread_size','spec_code','oem','total_width','top_width','length','weight','m_weight','issue_date','machining_date','prototype_date','production_date','revoke_date','status','remark','image']
                 df = pd.DataFrame(result,columns=column)
-                st.dataframe(df)
+             
+                st.dataframe(df.iloc[:,:-1])
                 
                 with st.expander("Search Records"):
                         
@@ -318,30 +319,34 @@ def main():
                                 result = search_record(search_category,search_item)
                                 
                                 df = pd.DataFrame(result,columns=column)
-                                st.dataframe(df)
+                              
+                                st.dataframe(df.iloc[:,:-1])
                                 
-                                if result is not None:
-                                        parent_dir = "C:/"
-                                        directory = "Spec_Photo"
-                                        path = os.path.join(parent_dir, directory)
-                                        StoreFilePath = "{}/{}.JPG".format(path,search_item)
-                                        
-                                        if StoreFilePath == 'C:/Spec_Photo/{}.JPG'.format(search_item):
+                                ## Condition IF image already Stored in Local then get from it other wise takes from data base 
+                                parent_dir = "C:/"
+                                directory = "Spec_Photo"
+                                
+                                path = os.path.join(parent_dir, directory)
+                                os.makedirs(path, exist_ok = True)
+                                StoreFilePath_code = "{}/{}.JPG".format(path,search_item)
+                                
+                                if StoreFilePath_code == 'C:/Spec_Photo/{}.JPG'.format(search_item) and search_item:
 
-                                                file_exists = os.path.exists(StoreFilePath)
-                                                if file_exists:
-                                                        img=Image.open(StoreFilePath)
-                                                        st.image(img,use_column_width='always')
-                                                else:
-                                                        st.info("No match spec image in directory",icon="🙄")
-                                                
-                                        elif search_item is None:
-                                                st.info("Zero Record in Dataset, ADD Spec DATA",icon="🙄")
-                                                
+                                        file_exists = os.path.exists(StoreFilePath_code)
+                                        if file_exists:
+                                                img=Image.open(StoreFilePath_code)
+                                                st.image(img,use_column_width='always')
+                                                st.info("Received image From Your Local Computer Directory")
                                         else:
-                                                st.info("Zero Record in Dataset, ADD Spec DATA",icon="🙄")
-                                
-                                # print(read_image(search_item,StoreFilePath))               
+                                                df_image = df.iloc[:,-1]
+                                                binary_image = df_image[0]
+                                                with open(StoreFilePath_code, "wb") as file:
+                                                        file.write(binary_image)
+                                                img=Image.open(StoreFilePath_code)
+                                                st.image(img,use_column_width='always')
+                                                st.info("Received image From DataSet")
+                                else:
+                                        st.error("No image in Dataset and Your Local Directory",icon="🙄")                                      
         
                         elif filter_selection == "Tread Size":
                                 search_category = 'tread_size'         
@@ -416,116 +421,113 @@ def main():
                                 status1 = select_result[0][15]
                                 remark1 = select_result[0][16]   
                                 image1 = select_result[0][17]    ## binary data
-              
-                        col1,col2,col3=st.columns(3)
-                        with col1:
-                                new_die_number = st.text_input("Die_number",die_number1,placeholder="IA001(101-01)-01")
-                                cmp=['7316','7716','7717','751','752','7316+7250','751+7250']
-                                new_compound = st.selectbox('Coumpound',cmp)
-                                new_tread_size  = st.text_input("Tread Size",tread_size1,placeholder='90/100-10 M6000')
-                                new_spec_code = st.text_input('Spec.Code',spec_code1,placeholder='SMC21522-027-A/B/C')                                                
-                                new_oem = st.text_input('OEM',oem1,placeholder='Honda-TT/TL')
-                                new_status = st.selectbox('Status',['Active','Revoke'])
+
+                                col1,col2,col3=st.columns(3)
                                 
-                        with col2:
-                                new_total_width = st.number_input("Total Width",total_width1)                                                
-                                new_top_width = st.number_input("Top Width",top_width1)
-                                new_length = st.number_input("Length",length1)
-                                new_weight = st.number_input("Weight",weight1)
-                                new_m_weight = st.number_input("1 Meter Weight",m_weight1)
-                                new_remark = st.text_area("Remark",remark1)
-                        with col3:
-                                new_issue_date = st.text_input("Issue Date")
-                                new_machining_date = st.text_input("Die Machining Date")
-                                new_prototype_date = st.text_input("Prototype Date")
-                                new_production_date = st.text_input("Production Date")
-                                new_revoke_date = st.text_input("Revoke Date")                      
+                                with col1:
+                                        new_die_number = st.text_input("Die_number",die_number1,placeholder="IA001(101-01)-01")
+                                        cmp=['7316','7716','7717','751','752','7316+7250','751+7250']
+                                        new_compound = st.selectbox('Coumpound',cmp)
+                                        new_tread_size  = st.text_input("Tread Size",tread_size1,placeholder='90/100-10 M6000')
+                                        new_spec_code = st.text_input('Spec.Code',spec_code1,placeholder='SMC21522-027-A/B/C')                                                
+                                        new_oem = st.text_input('OEM',oem1,placeholder='Honda-TT/TL')
+                                        new_status = st.selectbox('Status',['Active','Revoke'])
+                                        
+                                with col2:
+                                        new_total_width = st.number_input("Total Width",total_width1)                                                
+                                        new_top_width = st.number_input("Top Width",top_width1)
+                                        new_length = st.number_input("Length",length1)
+                                        new_weight = st.number_input("Weight",weight1)
+                                        new_m_weight = st.number_input("1 Meter Weight",m_weight1)
+                                        new_remark = st.text_area("Remark",remark1)
+                                with col3:
+                                        new_issue_date = st.text_input("Issue Date",issue_date1)
+                                        new_machining_date = st.text_input("Die Machining Date",machining_date1)
+                                        new_prototype_date = st.text_input("Prototype Date",prototype_date1)
+                                        new_production_date = st.text_input("Production Date",production_date1)
+                                        new_revoke_date = st.text_input("Revoke Date",revoke_date1)                    
                 
-                        if select_die is not None:
-                                parent_dir = "C:/"
-                                directory = "Spec_Photo"
-                                path = os.path.join(parent_dir, directory)
-                                StoreFilePath = "{}/{}.JPG".format(path,select_die)
-                                
-                                f1,f2 = st.columns(2)
-                                f1.subheader("Currunt Tread Specification Image")
-                                img=Image.open(StoreFilePath)
-                                
-                                f1.image(img,use_column_width=True)
-                                
-                        else:
-                                st.info("Zero Record in Dataset, ADD Spec DATA",icon="🙄")
-                        
-                        if new_die_number and new_total_width and new_top_width and new_tread_size and new_length  and new_spec_code  and new_weight and new_m_weight:
-                                cnt=2
-                                radio_button = st.radio("Do you Want to change Tread Spec Image..?",options=["No",'Yes'],horizontal=True,disabled=False)
-                                # check = st.checkbox("")
-                        
-                                if radio_button=="Yes":
+                                if select_die is not None:
+                                        parent_dir = "C:/"
+                                        directory = "Spec_Photo"
+                                        path = os.path.join(parent_dir, directory)
+                                        StoreFilePath = "{}/{}.JPG".format(path,select_die)
                                         
-                                        image_files_updated = st.file_uploader("Choose Tread Specification Image",type=['.jpeg','.jpg','.png'],disabled=False)
-                                        update = st.button("Update Record 👈",disabled=False)
+                                        f1,f2 = st.columns(2)
+                                        f1.subheader("Currunt Tread Specification Image")
+                                        img=Image.open(StoreFilePath)
                                         
-                                        if image_files_updated is not None: 
+                                        f1.image(img,use_column_width=True)
+                                
+                                if new_die_number and new_total_width and new_top_width and new_tread_size and new_length  and new_spec_code  and new_weight and new_m_weight:
+                                        cnt=2
+                                        radio_button = st.radio("Do you Want to change Tread Spec Image..?",options=["No",'Yes'],horizontal=True,disabled=False)
+                                        # check = st.checkbox("")
+                                
+                                        if radio_button=="Yes":
+                                                
+                                                image_files_updated = st.file_uploader("Choose Tread Specification Image",type=['.jpeg','.jpg','.png'],disabled=False)
+                                                update = st.button("Update Record 👈",disabled=False)
+                                                
+                                                if image_files_updated is not None: 
+                                
+                                                        parent_dir = "C:/"
+                                                        directory = "Spec_Photo"
+                                                        path = os.path.join(parent_dir, directory)
+                                                        os.makedirs(path, exist_ok = True)
+                                                        StoreFilePath2 = "{}/{}.JPG".format(path,new_die_number)
+                                                        f2.subheader("Updated Tread Specification Image")        
+                                                        img2=Image.open(image_files_updated)
+                                                        f2.image(img2,use_column_width=True)
+                                                                                                
+                                        else:
+                                                
+                                                image_files_updated = st.file_uploader("Choose Tread Specification Image",type=['.jpeg','.jpg','.png'],disabled=True)
+                                                
+                                                update = st.button("Update Record 👈 ",disabled=False)
                         
+                                else:
+                                        radio_button = st.radio("Do you Want to change Tread Spec Image..?",options=["Yes","No"],horizontal=True,disabled=True)
+                                        update = st.button("Update Record 👈",disabled=True)                                       
+                                        st.info("OPPS..!! You havn't Fill the all required Details", icon="ℹ️")
+                         
+                                if update: 
+                                                                                               
+                                        if radio_button=="No":
+                                                
                                                 parent_dir = "C:/"
                                                 directory = "Spec_Photo"
                                                 path = os.path.join(parent_dir, directory)
-                                                os.makedirs(path, exist_ok = True)
-                                                StoreFilePath2 = "{}/{}.JPG".format(path,new_die_number)
-                                                f2.subheader("Updated Tread Specification Image")        
-                                                img2=Image.open(image_files_updated)
-                                                f2.image(img2,use_column_width=True)
-                                                                                               
-                                else:
-                                        
-                                        image_files_updated = st.file_uploader("Choose Tread Specification Image",type=['.jpeg','.jpg','.png'],disabled=True)
-                                        
-                                        update = st.button("Update Record 👈 ",disabled=False)
-                
+                                                
+                                                old_path = "{}/{}.JPG".format(path,die_number1)
+                                                new_path = "{}/{}.JPG".format(path,new_die_number)
+                                                os.rename(old_path, new_path)
+                                                
+                                                
+                                                edit_die_data_radio_no(new_die_number,new_compound,new_tread_size,new_spec_code,new_oem,new_total_width,new_top_width,new_length,new_weight,new_m_weight,new_issue_date,new_machining_date,new_prototype_date,new_production_date,new_revoke_date,new_status,new_remark,die_number1,compound1,tread_size1,spec_code1,oem1,total_width1,top_width1,length1,weight1,m_weight1,issue_date1,machining_date1,prototype_date1,production_date1,revoke_date1,status1,remark1)
+                                
+                                                st.balloons()
+                                                st.success("Tread Specification History Updated successfully")
+                                                
+                                                
+                                        elif radio_button=="Yes":
+                                                
+                                                with open(StoreFilePath2, "wb") as file:
+                                                                file.write(image_files_updated.getbuffer())
+                                                
+                                                convert_pic = convert_To_Binary(StoreFilePath2)
+                                                
+                                                
+                                                edit_die_data(new_die_number,new_compound,new_tread_size,new_spec_code,new_oem,new_total_width,new_top_width,new_length,new_weight,new_m_weight,new_issue_date,new_machining_date,new_prototype_date,new_production_date,new_revoke_date,new_status,new_remark,convert_pic,die_number1,compound1,tread_size1,spec_code1,oem1,total_width1,top_width1,length1,weight1,m_weight1,issue_date1,machining_date1,prototype_date1,production_date1,revoke_date1,status1,remark1,image1)
+                                                
+                                                st.write("update image query executed successfully")
+                                                
+                                                st.balloons()
+                                                st.success("Tread Specification History Updated successfully")
+                                                
                         else:
-                                radio_button = st.radio("Do you Want to change Tread Spec Image..?",options=["Yes","No"],horizontal=True,disabled=True)
-                                update = st.button("Update Record 👈",disabled=True)
+                                st.error("Opps !!! Zero Recored Avalible in Dataset <--HINT-->Add Record First",icon="🙄") 
                                 
-                                st.info("OPPS..!! You havn't Fill the all required Details", icon="ℹ️")
-                        
-                # if "load_state" not in st.session_state:
-                #                 st.session_state.load_state = False
-                        
-                if update: 
-                                        
-                        if radio_button=="No":
-                                
-                                parent_dir = "C:/"
-                                directory = "Spec_Photo"
-                                path = os.path.join(parent_dir, directory)
-                                
-                                old_path = "{}/{}.JPG".format(path,die_number1)
-                                new_path = "{}/{}.JPG".format(path,new_die_number)
-                                os.rename(old_path, new_path)
-                                
-                                
-                                edit_die_data_radio_no(new_die_number,new_compound,new_tread_size,new_spec_code,new_oem,new_total_width,new_top_width,new_length,new_weight,new_m_weight,new_issue_date,new_machining_date,new_prototype_date,new_production_date,new_revoke_date,new_status,new_remark,die_number1,compound1,tread_size1,spec_code1,oem1,total_width1,top_width1,length1,weight1,m_weight1,issue_date1,machining_date1,prototype_date1,production_date1,revoke_date1,status1,remark1)
-                
-                                st.balloons()
-                                st.success("Tread Specification History Updated successfully")
-                                
-                                
-                        elif radio_button=="Yes":
-                                
-                                with open(StoreFilePath2, "wb") as file:
-                                                file.write(image_files_updated.getbuffer())
-                                
-                                convert_pic = convert_To_Binary(StoreFilePath2)
-                                
-                                
-                                edit_die_data(new_die_number,new_compound,new_tread_size,new_spec_code,new_oem,new_total_width,new_top_width,new_length,new_weight,new_m_weight,new_issue_date,new_machining_date,new_prototype_date,new_production_date,new_revoke_date,new_status,new_remark,convert_pic,die_number1,compound1,tread_size1,spec_code1,oem1,total_width1,top_width1,length1,weight1,m_weight1,issue_date1,machining_date1,prototype_date1,production_date1,revoke_date1,status1,remark1,image1)
-                                
-                                st.write("update image query executed successfully")
-                                
-                                st.balloons()
-                                st.success("Tread Specification History Updated successfully")
-          
                    
         elif choice == 'Delete Record':
                         # new_title4 = '<p style="font-family:sans-serif; color:#F63366; font-size: 40px; font-weight: bold;">Delete Tread Specification Details</p>'
@@ -561,20 +563,11 @@ def main():
                         
         else:
                 st.title(":bar_chart: Tread Specification History")
-                st.write("---")
-                
-                # option_menu(
-                #                 menu_title=None,
-                #                 options= ['Total Spec',"Compound Wise Spec",'OEM Spec','Active Spec','Revoked Spec.'],
-                #                 icons=['bi bi-file-person','bi bi-cloud-plus','bi bi-easel','bi bi-bootstrap-reboot','bi bi-trash'],
-                #                 menu_icon="cast",
-                #                 default_index=2,
-                #                 orientation='horizontal')
+                st.write("---") 
                 
                 column = ['die_number','compound','tread_size','spec_code','oem','total_width','top_width','length','weight','m_weight','issue_date','machining_date','prototype_date','production_date','revoke_date','status','remark','image']
                 result = view_all_data()
                 df = pd.DataFrame(result,columns=column)
-                # st.dataframe(df)
         
                 cl1,cl2,cl3,cl4,cl5 = st.columns(5)
                 with cl1:
@@ -619,7 +612,7 @@ def main():
                         
                         ## bar chart --> total number of spec vs material,OEM,Active                            
                         df_bar = df_selection['compound'].value_counts().reset_index()                               
-                        pie_chart = px.pie(df_bar,names='index',values='compound')
+                        pie_chart = px.pie(df_bar,names='index',values='compound',width=500)
                         st.plotly_chart(pie_chart)
                         
                         ## bar chart --> total number of spec vs material,OEM,Active 
